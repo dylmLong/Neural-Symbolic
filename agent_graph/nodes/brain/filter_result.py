@@ -6,10 +6,10 @@ from agent_graph.state_schema import AgentState
 @tool
 def filter_results(sql_statements: List[str], query_results: List[List[Dict[str, Any]]]) -> List[Dict[str, Any]]:
     """
-    过滤掉查询结果为空的 SQL，将有结果的 SQL 和数据组合输出。
-    :param sql_statements: SQL语句列表
-    :param query_results: 每条SQL语句的查询结果
-    :return: 包含有实际结果的 SQL + Result 对
+    Filter out SQL queries that returned empty results and combine only those with valid results.
+    :param sql_statements: List of SQL statements
+    :param query_results: Query results corresponding to each SQL statement
+    :return: List of dictionaries containing valid SQL + Result pairs
     """
     valid_results = []
     for sql, result in zip(sql_statements, query_results):
@@ -22,7 +22,7 @@ def filter_results(sql_statements: List[str], query_results: List[List[Dict[str,
 
 def filter_result_node(state: AgentState) -> AgentState:
     """
-    过滤掉查询结果为空的 SQL，将有结果的 SQL 和数据组合输出。
+    Filter out SQL queries that returned empty results and combine only those with valid results.
     """
     print("\n================================[Brain Message]=================================\n")
     print("根据执行的SQL和查询结果，汇总有效结果：")

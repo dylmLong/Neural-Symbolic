@@ -5,7 +5,7 @@ from agent_graph.state_schema import ObjectBox, AgentState
 from langchain_core.tools import tool
 
 def compare_relative_longitude(a: ObjectBox, b: ObjectBox, sunset: ObjectBox) -> str:
-    """判断 a 相对 b 是在 sunset 的西侧还是东侧"""
+    "Determine whether a is to the west or east of b relative to sunset."
     def cx(box: ObjectBox) -> float:
         return (box['bbox'][0] + box['bbox'][2]) / 2.0
     sunset_cx = cx(sunset)
@@ -47,25 +47,25 @@ def generate_spatial_sql(a: ObjectBox, b: ObjectBox, sunset: Optional[ObjectBox]
 @tool
 def generate_sql_queries(objects: List[ObjectBox]) -> List[str]:
     """
-    根据检测到物体变迁生成 SQL 查询语句
-    :param objects: 检测的物体
+    Generates SQL query statements based on detected object changes:
+    :param objects: Detected objects
     :return: SQLs
     """
     sql_list = []
     sunset_obj = next((obj for obj in objects if obj["label"] == "夕阳"), None)
-    # 枚举所有可能的组合 a != b
+    # Enumerate all possible combinations a != b
     for i in range(len(objects)):
         for j in range(i + 1, len(objects)):
             obj_a = objects[i]
             obj_b = objects[j]
 
             if obj_a["label"] == "夕阳" or obj_b["label"] == "夕阳" or obj_a["label"] == obj_b["label"]:
-                continue  # 落日仅作参考不参与查询, 相同的 label 也跳过
+                continue  # Sunset images are for reference only and are not included in the search; images with the same label will also be skipped.
             sql = generate_spatial_sql(obj_a, obj_b, sunset_obj)
             sql_list.append(sql)
     return sql_list
 
-# LangGraph 节点函数
+# LangGraph Node Functions
 def generate_sql_node(state: AgentState) -> AgentState:
     print("\n================================[Brain Message]=================================\n")
     print("根据识别的实体，生成如下可能的 SQL：")

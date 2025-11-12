@@ -1,4 +1,4 @@
-from gradio.monitoring_dashboard import process_time
+# from gradio.monitoring_dashboard import process_time
 from langgraph.graph import StateGraph
 from agent_graph.state_schema import AgentState, get_init_agent_state
 from agent_graph.nodes.perception.detect import detect_node
@@ -12,37 +12,37 @@ from agent_graph.nodes.action.execute_sql import execute_sql_node
 
 
 def build_agent_graph():
-    # 构建状态图
+    # Construct state graph
     graph = StateGraph(AgentState)
 
-    # 意图识别节点
+    # Intent recognition node
     graph.add_node("classify_intent", classify_intent_node)
 
-    # 聊天节点
+    # chatting node
     graph.add_node("llm_chat", llm_chat_node)
 
-    # 检测节点
+    # detection node
     graph.add_node("detect", detect_node)
 
-    # 生成 SQL 节点
+    # SQL generation node
     graph.add_node("generate_sql", generate_sql_node)
 
-    # SQL 路由节点
+    # SQL routing node
     graph.add_node("sql_router", sql_router_node)
 
-    # 执行 SQL 节点
+    # SQL execution node
     graph.add_node("execute_sql", execute_sql_node)
 
-    # 过滤结果节点
+    # result filtering node
     graph.add_node("filter_result", filter_result_node)
 
-    # 设置根据结果回答问题节点
+    # Set up a question-answering node based on the results
     # graph.add_node("generate_answer", generate_answer_node)
 
-    # 设置入口
+    # Set the entry point
     graph.set_entry_point("classify_intent")
 
-    # 意图路口
+    # Intent router
     graph.add_conditional_edges("classify_intent", route_intent_condition, {
         "chat": "llm_chat",
         "reasoning": "detect",
@@ -52,14 +52,14 @@ def build_agent_graph():
     graph.add_edge("generate_sql", "sql_router")
     graph.add_edge("execute_sql", "sql_router")
 
-    # 条件循环
+    # Conditional loop
     graph.add_conditional_edges("sql_router", route_sql_condition, {
         "continue": "execute_sql",
         "done": "filter_result"
     })
     # graph.add_edge("filter_result", "generate_answer")
 
-    # 设置终点
+    # Set the finish point
     # graph.set_finish_point("generate_answer")
     graph.set_finish_point("filter_result")
     graph.set_finish_point("llm_chat")
@@ -67,27 +67,27 @@ def build_agent_graph():
     return graph.compile()
 
 def test_case1():
-    # 构造初始状态
-    image_path = "D:\\User\\zhangruipeng\\PycharmProjects\\PBAgent\\data\\test1.jpg"
-    user_text = "请问这张照片是在哪里拍摄的？"
+    # Construct the initial state
+    image_path = "../data/test1.jpg"
+    user_text = "Where was this photo taken?"
     state: AgentState = get_init_agent_state(user_text, image_path)
 
 
     print("================================[Human Message]=================================")
     print(state.get("user_text"))
     print(state.get("image_path"))
-    # 构建并运行 LangGraph()
+    # Build and run LangGraph()
     graph = build_agent_graph()
     # graph.get_graph().print_ascii()
     final_state = graph.invoke(state, {"recursion_limit": 100})
 
 def test_case2():
-    # 构造初始状态
-    user_text2 = "你是谁?"
+    # Construct the initial state
+    user_text2 = "Who are you?"
     state: AgentState = get_init_agent_state(user_text2, "")
     print("\n================================[Human Message]=================================\n")
     print(state.get("user_text"))
-    # 构建并运行 LangGraph()
+    # Build and run LangGraph()
     graph = build_agent_graph()
     # graph.get_graph().print_ascii()
     final_state = graph.invoke(state, {"recursion_limit": 100})

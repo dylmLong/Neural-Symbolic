@@ -13,9 +13,8 @@ class QwenWrapper:
 
     def chat(self, messages: List, temperature: float = 0.7) -> str:
         """
-        调用 Qwen 接口生成回复。
-
-        messages: List of dicts, e.g. [{"role": "user", "content": "你是谁？"}]
+        The Qwen API is used to generate a reply.
+        Messages: A list of dicts, e.g., [{"role": "user", "content": "Who are you?"}]
         """
         try:
             resp = dashscope.Generation.call(

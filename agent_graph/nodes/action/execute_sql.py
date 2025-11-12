@@ -18,9 +18,9 @@ def get_duckdb_conn():
 @tool
 def execute_sql_query(sql: str) -> List[dict]:
     """
-    执行单条 SQL 查询，并返回结果列表（字典形式）。
-    :param sql: SQL 语句
-    :return: 查询结果
+    Executes a single SQL query and returns a list of results (in dictionary format).
+    :param sql: The SQL statement
+    :return: The query results
     """
     try:
         conn = get_duckdb_conn()
@@ -32,7 +32,7 @@ def execute_sql_query(sql: str) -> List[dict]:
     except Exception as e:
         return [{"error": str(e)}]
 
-# LangGraph 节点函数
+# LangGraph Node Functions
 def execute_sql_node(state: AgentState) -> AgentState:
     executed = set(state.get("executed_sqls") or [])
     sql = state.get("current_sql")
