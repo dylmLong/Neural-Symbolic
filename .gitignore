@@ -169,3 +169,18 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Project-specific documents
+# Database files (usually not submitted to the repository as they may contain sensitive data or change)
+*.db
+*.db-journal
+duckdb/*.db
+
+# Model file (if the file is too large, use git LFS or not upload)
+# models/yolo/*.pt
+
+# Test image (If you don't want to upload test data)
+# data/*.jpg
+
+# Configuration file (if it contains sensitive information)
+# config.yaml
